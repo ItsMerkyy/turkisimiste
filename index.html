@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elif and Random Turkish Names</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #1E88E5;
+            text-align: center;
+        }
+        form {
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        label {
+            color: #BBDEFB;
+        }
+        input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+            background-color: #333;
+            color: #E0E0E0;
+        }
+        button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #1E88E5;
+            color: #FFF;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 1%;
+        }
+        button:hover {
+            background-color: #1565C0;
+        }
+        #output {
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            color: #BBDEFB;
+        }
+    </style>
+</head>
+<body>
+    <h1>Elif and Random Turkish Names</h1>
+    <form id="webhookForm">
+        <label for="webhookInput">Enter your webhook URL:</label>
+        <input type="url" id="webhookInput" name="webhookInput" required>
+        <br><br>
+        <button type="button" id="startButton">Start</button>
+        <button type="button" id="stopButton">Stop</button>
+    </form>
+    <div id="output"></div>
+
+    <script>
+        let intervalId;
+
+        function getRandomTurkishName() {
+            const secondNames = [
+                "Ali", "Ayşe", "Mustafa", "Fatma", "Mehmet", "Zeynep", "Ahmet", "Emine", "Hüseyin", "Hatice", 
+                "Osman", "Sultan", "İbrahim", "Şeyma", "Yusuf", "Sevgi", "Cemal", "Nur", "Can", "Nalan", 
+                "Güven", "Serkan", "Hakan", "Özlem", "Merve", "Deniz", "Cenk", "Onur", "Gizem", "Meltem", 
+                "Gökhan", "Pınar", "Seda", "Aylin", "Kadir", "Fikret", "Ezgi", "Yasin", "Ebru", "Burak", 
+                "Büşra", "Dilara", "Berk", "Kerem", "Sibel", "Sinan", "Ferhat", "Kemal", "Yasemin", "Tamer", 
+                "Gül", "Ömer", "Esra", "Furkan", "Fadime", "Bülent", "Orhan", "Melis", "Tuna", "Zerrin", 
+                "Emir", "Feride", "Aysun", "Ender", "Ecem", "Gonca", "Işık", "Süleyman", "Aybüke", "Orkun", 
+                "Selin", "Denizhan", "Gülşah", "Volkan", "Umut", "Neşe", "Eren", "Zehra", "Mert", "Funda", 
+                "Serap", "Engin", "Şirin", "Berat", "Derya", "Çağlar", "İrem", "Ayhan", "Özcan", "Selda", 
+                "Canan", "Banu", "Çağrı", "Neslihan", "İlkay", "Sema", "Nihat", "Sevil", "Ceren", "Kaan",
+                "Hande", "Tuba", "Gökmen", "Rıza", "Ayberk", "Gülten", "Arzu", "Nurgül", "Taner", "Ümit",
+                "Yeliz", "Oğuz", "Songül", "Metin", "Perihan", "Rana", "Bahar", "Ziya", "Müjgan", "Tayfun",
+                "Zeki", "Emine", "Belgin", "Seher", "Zühal", "Yıldız", "Münir", "Cevat", "Rukiye", "Sevda",
+                "Levent", "Hasan", "Meryem", "Halil", "Rabia", "Orkun", "Sabri", "Aycan", "Sinem", "Nazlı",
+                "Müslüm", "Sadık", "Saadet", "Şaban", "Necmiye", "Yunus", "Kadriye", "Eda", "Nazmiye", "Emirhan"
+            ];
+            const secondName = secondNames[Math.floor(Math.random() * secondNames.length)];
+            return `Elif ${secondName}`;
+        }
+
+        function sendNameToWebhook(webhookUrl, name) {
+            const payload = {
+                content: name
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            const webhookUrl = document.getElementById('webhookInput').value;
+
+            if (!webhookUrl) {
+                alert("Please enter a webhook URL.");
+                return;
+            }
+
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+
+            intervalId = setInterval(() => {
+                const name = getRandomTurkishName();
+                document.getElementById('output').innerHTML += name + '<br>';
+                sendNameToWebhook(webhookUrl, name);
+            }, 1000); // 1 saniyede bir yeni isim gönder
+        });
+
+        document.getElementById('stopButton').addEventListener('click', function() {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        });
+    </script>
+</body>
+</html>
